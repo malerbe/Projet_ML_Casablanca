@@ -62,3 +62,24 @@ def group_flights_optimized(dataset_df):
     final_df = pd.DataFrame(rows)
     
     return final_df
+
+
+def preprocess_dataset(dataset_df):
+    """
+    Preprocess Dataset with options
+    """
+    final_dataset = dataset_df.copy()
+    # Drop useless columns:
+    final_dataset.drop(["Airline Name", "Airline ICAO Code", "Departure Airport ICAO", "Arrival Airport ICAO"], inplace=True, axis=1)
+
+    # Convert types:
+    convert_date_columns(final_dataset, ["Scheduled Departure Time", "Estimated Departure Time", "Actual Departure Time", "Scheduled Arrival Time", "Estimated Arrival Time"])
+    
+    
+    make_departure_delay_column(final_dataset)
+    make_estimated_departure_delay_column(final_dataset)
+
+    return final_dataset
+    
+
+
