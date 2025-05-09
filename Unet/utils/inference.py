@@ -38,11 +38,17 @@ train_dataset, eval_dataset = datasets.make_BrainTumorSegDataset(
 
 # Sélectionner une image et un masque au hasard
 index = random.randint(0, len(eval_dataset) - 1)
+#index = 0
 image, mask = eval_dataset[index]
+
+# Assurez-vous que l'image a 3 canaux
+# if image.shape[0] == 1:
+#     image = image.repeat(3, 1, 1)  # Dupliquer le canal unique pour obtenir 3 canaux
 
 # Ajouter une dimension batch
 image = image.unsqueeze(0).to(device)
 mask = mask.unsqueeze(0).to(device)
+
 
 # Faire une prédiction
 with torch.no_grad():
@@ -54,6 +60,12 @@ with torch.no_grad():
 image = image.squeeze().cpu().numpy()
 mask = mask.squeeze().cpu().numpy()
 predicted_mask = predicted_mask.squeeze().cpu().numpy()
+
+# Transposer l'image pour l'afficher correctement
+#image = image.transpose(1, 2, 0)
+#mask = mask.transpose(1, 2, 0)
+#²predicted_mask = predicted_mask.transpose(1, 2, 0)
+
 
 # Superposer les images et les masques
 fig, ax = plt.subplots(1, 3, figsize=(18, 6))

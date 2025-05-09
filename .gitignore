@@ -1,3 +1,7 @@
 *.csv
 *.png
 *.pth
+*.jpg
+*.tar
+*.pyc
+*.pth.tar

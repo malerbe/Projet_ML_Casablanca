@@ -70,4 +70,84 @@ class UNet(nn.Module):
         out = self.out(up4)
         return out
 
+#######################################
 
+class DoubleConv_2(nn.Module):
+    def __init__(self, in_channels, out_channels, batch_norm=True):
+        super(DoubleConv_2, self).__init__()
+        if batch_norm:
+            self.conv = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False), # Bias inutile car sera annulé par natch norm
+                nn.BatchNorm2d(out_channels),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False), # Bias inutile car sera annulé par natch norm
+                nn.BatchNorm2d(out_channels),
+                nn.ReLU(inplace=True)
+            )
+        else:
+            self.conv = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True), # Bias inutile car sera annulé par natch norm
+                nn.ReLU(inplace=True),
+                nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True), # Bias inutile car sera annulé par natch norm
+                nn.ReLU(inplace=True)
+            )
+
+    def forward(self, x):
+        return self.conv(x)
+    
+class UNet_2(nn.Module):
+    def __init__(self, in_channels=3, out_channels=1, features=[64, 128, 256, 512], batch_norm=True, kernel_pool_size=2, conv_kernel_size=2):
+        super(UNet_2, self).__init__()
+        self.ups = nn.ModuleList()
+        self.downs = nn.ModuleList()
+        self.pool = nn.MaxPool2d(kernel_size=kernel_pool_size, stride=2)
+
+
+        # Down part of Unet
+        for feature in features:
+            self.downs.append(DoubleConv_2(in_channels, feature, batch_norm))
+            in_channels = feature
+
+        # Up par of Unet
+        for feature in reversed(features):
+            self.ups.append(
+                nn.ConvTranspose2d(
+                    feature*2, feature, kernel_size=conv_kernel_size, stride=2
+                )
+            )
+            self.ups.append(
+                DoubleConv_2(feature*2, feature, batch_norm)
+            )
+
+        self.bottleneck = DoubleConv_2(features[-1], features[-1]*2, batch_norm)
+        self.final_conv = nn.Conv2d(features[0], out_channels, kernel_size=1)
+
+    def forward(self, x):
+
+        skip_connections = [] 
+        for down in self.downs:
+            x = down(x)
+            skip_connections.append(x)
+            x = self.pool(x)
+        
+        x = self.bottleneck(x)
+        skip_connections = skip_connections[::-1]
+
+        for idx in range(0, len(self.ups), 2):
+            x = self.ups[idx](x)
+            skip_connection = skip_connections[idx//2]
+            concat_skip = torch.cat((skip_connection, x), dim=1)
+            x = self.ups[idx+1](concat_skip)
+
+        return self.final_conv(x)
+
+def test():
+    x = torch.randn((3, 1, 160, 160))
+    model = UNet_2(in_channels=1, out_channels=1)
+    preds = model(x)
+    print(preds.shape)
+    print(x.shape)
+    assert preds.shape == x.shape
+
+if __name__ == "__main__":
+    test()
