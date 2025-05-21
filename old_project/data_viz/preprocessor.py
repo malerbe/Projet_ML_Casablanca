@@ -27,7 +27,7 @@ def make_departure_delay_column(dataset_df):
 def make_estimated_departure_delay_column(dataset_df):
     dataset_df["Estimated Departure Delay"] = (dataset_df["Estimated Departure Time"] - dataset_df["Scheduled Departure Time"]).dt.total_seconds() / 60
 
-def group_flights_optimized(dataset_df):
+def group_flights(dataset_df):
     # Initialisation d'une liste pour stocker les nouvelles lignes
     rows = []
     
@@ -63,12 +63,25 @@ def group_flights_optimized(dataset_df):
     
     return final_df
 
+def delete_airline_from_dataset(dataset_df, aita_code):
+    if aita_code == "NaN":
+        return dataset_df[~dataset_df["Airline IATA Code"].isna()]
+    elif type(aita_code) == list:
+        for code in aita_code:
+            dataset_df = dataset_df[dataset_df["Airline IATA Code"] != code]
+        return dataset_df
+    else:
+        return dataset_df[dataset_df["Airline IATA Code"] != aita_code]
 
-def preprocess_dataset(dataset_df):
+
+def preprocess_dataset(dataset_df, del_nan_airlines=True, drop_unknown_status=True, Unwanted_airlines=[], grouped=True, keep_values_ADTNan_EDT_over_x_minutes=None):
     """
     Preprocess Dataset with options
     """
+
+
     final_dataset = dataset_df.copy()
+
     # Drop useless columns:
     final_dataset.drop(["Airline Name", "Airline ICAO Code", "Departure Airport ICAO", "Arrival Airport ICAO"], inplace=True, axis=1)
 
@@ -76,8 +89,50 @@ def preprocess_dataset(dataset_df):
     convert_date_columns(final_dataset, ["Scheduled Departure Time", "Estimated Departure Time", "Actual Departure Time", "Scheduled Arrival Time", "Estimated Arrival Time"])
     
     
-    make_departure_delay_column(final_dataset)
-    make_estimated_departure_delay_column(final_dataset)
+    #make_departure_delay_column(final_dataset)
+    #make_estimated_departure_delay_column(final_dataset)
+
+
+    ####################################################
+    ############# Delete Unwanted Airlines #############
+    ####################################################
+    if del_nan_airlines:
+        # Compagnies type army:
+        final_dataset = delete_airline_from_dataset(final_dataset, "NaN")
+
+    # Delete other companies from list:    
+    final_dataset = delete_airline_from_dataset(final_dataset, Unwanted_airlines)
+
+    ####################################################
+    ############### Drop Unknown Status ################
+    ####################################################
+    if drop_unknown_status:
+        final_dataset = final_dataset[final_dataset["Flight Status"] != "unknown"]
+
+    ####################################################
+    ################## Group flights ###################
+    ####################################################
+    if grouped:
+        final_dataset = group_flights(final_dataset)
+
+    ####################################################
+    ################## Compute Delays ##################
+    ####################################################
+
+    #### Cas numéro 1: Actual Departure Time présent:
+    # final_dataset_ADT = final_dataset[~final_dataset["Actual Departure Time"].isna()]
+
+    # # Dans ce cas, on calcule le retard de façon précise:
+    # final_dataset_ADT["Delay"] = final_dataset_ADT["Actual Departure Time"] - final_dataset_ADT["Scheduled Departure Time"]
+
+    #### Cas numéro 2: Actual Departure Time absent mais Estimated Departure Time présent:
+    ### Cas numéro 2.1: On garde tout
+
+    ### Cas numéro 2.2: On vire tous les Delays en dessous de keep_values_ADTNan_EDT_over_x_minutes
+
+    ### Cas numéro 2.3: On considère tout les Delays au dessus / en dessous d'une limite comme étant supérieurs/inférieurs à une durée
+
+    ### Cas numéro 2.4: On ajoute x minutes au delay, ou on ajoute un delay aléatoire, respectant une loi de distribution à déterminer manuellement grâce à FlightRadar
 
     return final_dataset
     

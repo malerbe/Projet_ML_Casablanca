@@ -5,3 +5,6 @@
 *.tar
 *.pyc
 *.pth.tar
+*.pyc
+old_project/data_viz/__pycache__/preprocessor.cpython-312.pyc
+old_project/data_viz/__pycache__/data_viz.cpython-312.pyc

@@ -150,3 +150,57 @@ masks_dir = r"C:\Users\223120964.HCAD\OneDrive - GEHealthCare\Desktop\Projet_ML_
 # Diviser les données
 #remove_unmatched_images(images_dir, masks_dir)
 #split_data(images_dir, masks_dir)
+
+
+import pandas as pd
+
+
+class TumorSizeDataset(Dataset):
+    def __init__(self, image_dir, csv_file, transform=None, threshold=6000):
+        self.image_dir = image_dir
+        self.annotations = pd.read_csv(csv_file)
+        self.transform = transform
+        self.threshold = threshold
+
+        # Vérifier que les noms d'images dans le CSV correspondent aux fichiers dans le répertoire
+        self.images = os.listdir(image_dir)
+        self.annotations = self.annotations[self.annotations['image_name'].isin(self.images)]
+
+    def __len__(self):
+        return len(self.annotations)
+
+    def __getitem__(self, index):
+        img_path = os.path.join(self.image_dir, self.annotations.iloc[index, 0])
+        image  = np.array(Image.open(img_path).convert("L"), dtype=np.float32)
+        size = self.annotations.iloc[index, 1]
+        label = 1 if size > self.threshold else 0  # Définir un seuil pour la classification binaire
+        
+
+        if self.transform is not None:
+            augmentations = self.transform(image=image)
+            image = augmentations["image"]
+
+        return image, label, self.annotations.iloc[index, 0], size
+    
+
+# # Chemin vers le répertoire des images et le fichier CSV
+
+
+# import albumentations as A
+# from albumentations.pytorch import ToTensorV2
+# train_transform = ToTensorV2()
+
+
+
+# image_dir = r"C:\Users\223120964.HCAD\OneDrive - GEHealthCare\Desktop\Projet_ML_Casablanca\Unet\data\train_images"
+# csv_file = r"C:\Users\223120964.HCAD\OneDrive - GEHealthCare\Desktop\Projet_ML_Casablanca\Unet\data\image_sizes.csv"
+
+# # Création du dataset
+# dataset = TumorSizeDataset(image_dir=image_dir, csv_file=csv_file, transform=train_transform)
+
+# # Création du DataLoader
+# dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+
+# # Test du dataset
+# for batch_idx, (data, targets, img_name, size) in enumerate(dataloader):
+#     print(f"Batch {batch_idx}: data shape: {data.shape}, targets: {targets}")
