@@ -1,0 +1,40 @@
+
+\begin{table}[h]
+\centering
+\caption{Statistiques descriptives du dataset (images avec tumeurs)}
+\label{tab:dataset_stats}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Statistique} & \textbf{tumor\_area} & \textbf{tumor\_pixels} & \textbf{image\_area} & \textbf{tumor\_ratio} & \textbf{mean\_intensity} & \textbf{std\_intensity} & \textbf{max\_intensity} & \textbf{min\_intensity} & \textbf{median\_intensity} & \textbf{perimeter} & \textbf{eccentricity} & \textbf{solidity} & \textbf{extent} & \textbf{compactness} & \textbf{aspect\_ratio} & \textbf{num\_components} \\
+\hline
+Nombre & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 & 3064 \\
+Moyenne & 4422 & 4422 & 261181 & 0.017 & 88.33 & 20.72 & 157.06 & 28.55 & 88.30 & 253 & 0.651 & 0.943 & 0.712 & 0.778 & 1.26 & 1.0 \\
+Écart-type & 3619 & 3619 & 13725 & 0.014 & 29.15 & 8.65 & 39.41 & 16.50 & 31.91 & 118 & 0.167 & 0.062 & 0.094 & 0.128 & 0.27 & 0.0 \\
+Minimum & 163 & 163 & 65536 & 0.001 & 16.38 & 2.04 & 40.00 & 0.00 & 11.00 & 47 & 0.115 & 0.485 & 0.254 & 0.238 & 1.00 & 1.0 \\
+Q1 (25\%) & 1706 & 1706 & 262144 & 0.007 & 63.99 & 14.31 & 132.00 & 16.00 & 61.00 & 163 & 0.541 & 0.935 & 0.668 & 0.725 & 1.08 & 1.0 \\
+Médiane (50\%) & 3366 & 3366 & 262144 & 0.013 & 89.65 & 19.63 & 158.00 & 27.00 & 88.00 & 232 & 0.670 & 0.967 & 0.735 & 0.819 & 1.19 & 1.0 \\
+Q3 (75\%) & 6058 & 6058 & 262144 & 0.023 & 110.16 & 25.91 & 182.00 & 39.00 & 113.00 & 319 & 0.778 & 0.977 & 0.777 & 0.868 & 1.35 & 1.0 \\
+Maximum & 25461 & 25461 & 262144 & 0.097 & 186.40 & 57.28 & 255.00 & 102.00 & 203.00 & 1147 & 0.983 & 0.992 & 0.914 & 1.003 & 3.37 & 2.0 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+% Légende des variables :
+% tumor_area : Aire de la tumeur (pixels)
+% tumor_pixels : Nombre de pixels de tumeur
+% image_area : Aire totale de l'image (pixels)
+% tumor_ratio : Ratio tumeur/image
+% mean_intensity : Intensité moyenne
+% std_intensity : Écart-type d'intensité
+% max_intensity : Intensité maximale
+% min_intensity : Intensité minimale
+% median_intensity : Intensité médiane
+% perimeter : Périmètre de la tumeur
+% eccentricity : Excentricité (0=cercle, 1=ellipse allongée)
+% solidity : Solidité (compacité)
+% extent : Ratio aire/bounding_box
+% compactness : Compacité (4π×aire/périmètre²)
+% aspect_ratio : Ratio hauteur/largeur
+% num_components : Nombre de composantes connexes

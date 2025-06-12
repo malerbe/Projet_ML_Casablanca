@@ -1,0 +1,12 @@
+RAPPORT D'ANALYSE DU DATASET
+==================================================
+
+Nombre total d'images: 3064
+Images avec tumeur: 3064 (100.0%)
+Images sans tumeur: 0 (0.0%)
+
+STATISTIQUES DES TUMEURS:
+Taille moyenne: 4422 ± 3619 pixels
+Taille médiane: 3366 pixels
+Ratio moyen tumeur/image: 1.69%
+Intensité moyenne: 88.327 ± 29.149

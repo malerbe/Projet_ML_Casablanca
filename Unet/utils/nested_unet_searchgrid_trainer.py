@@ -32,7 +32,7 @@ from loss_functions.losses import DiceLoss, IoULoss, FocalLoss, CExDL, DLxFL
 def unet_trainer(loader, model, optimizer, loss_fct, scaler, scheduler, **args):
     
     scaler = torch.amp.GradScaler('cuda')
-    for epoch in range(args["NUM_EPOCHS"]):
+    for epoch in range(args["FNUM_EPOCHS"]):
         loop = tqdm(loader)
     
         for batch_idx, (data, targets) in enumerate(loop):
@@ -133,7 +133,6 @@ best_performance = float('inf')
 best_params = None
 
 
-
 if __name__ == "__main__":
 
     combination_count = 0
@@ -187,6 +186,8 @@ if __name__ == "__main__":
             train_transform,
             val_transforms
         )
+
+        images, masks = next(iter(train_loader))
 
         scaler = torch.amp.GradScaler('cuda')
 

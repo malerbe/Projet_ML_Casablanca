@@ -90,7 +90,7 @@ class NestedUNet(nn.Module):
         num_classes, input_channels = out_channels, in_channels
         super().__init__()
 
-        nb_filter = [32, 64, 128, 256, 512]
+        
 
         self.deep_supervision = deep_supervision
 
